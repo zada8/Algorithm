@@ -1,25 +1,36 @@
-import java.io.*;
-public class Main {
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int t=Integer.parseInt(br.readLine());
-        for(int tc=1;tc<=t;tc++){
-            int a=Integer.parseInt(br.readLine());
-            int b=Integer.parseInt(br.readLine());
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
-            int apt[][] = new int[a+1][b];
-            for(int i=0;i<b;i++){
-                apt[0][i]=i+1;
-            }
-            for(int i=1;i<a+1;i++){
-                for(int j=0;j<b;j++){
-                    if(j==0)
-                        apt[i][j]=apt[i-1][j];
-                    else
-                        apt[i][j]=apt[i-1][j]+apt[i][j-1];
-                }
-            }
-            System.out.println(apt[a][b-1]);
-        }
-    }
+public class Main {
+
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int T = Integer.parseInt(br.readLine());
+		
+		for (int i = 0; i< T; i++) { //테스트케이스
+			int k = Integer.parseInt(br.readLine()); //k층,
+			int n = Integer.parseInt(br.readLine());  //n호에 사는 사람 수
+			
+			int[][] apt = new int[k+1][n];
+			for (int j = 0; j < k+1; j++) {
+				for (int l = 0; l <n; l++) {
+					if (j == 0) { //0층
+						apt[j][l] = l + 1;
+					}
+					else if (l == 0) {
+						apt[j][l] = 1;
+					}
+					else {
+						for(int m = 0; m <= l; m++) {
+							apt[j][l] += apt[j-1][m];
+						}
+					}
+					
+				}
+			}
+			System.out.println(apt[k][n-1]);
+		}
+	}
+
 }
