@@ -4,15 +4,22 @@ import java.io.InputStreamReader;
 
 public class Main {
 
+	
+	private static int fac;
 	public static void main(String[] args) throws NumberFormatException, IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int N = Integer.parseInt(br.readLine());
-		long fac = 1;
 		
-		for(int i = 1; i<= N; i++) {
-			fac *= i;
+		System.out.println(facto(N));
+		
+	}
+
+	public static long facto(int i) {
+		if(i==0) {
+			return 1;
 		}
-		System.out.println(fac);
+		
+		return  facto(i-1)*i;
 	}
 
 }
