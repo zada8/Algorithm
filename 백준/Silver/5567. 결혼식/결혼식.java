@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,23 +25,22 @@ public class Main {
 		}
 		///친구 관계 배열 
 		
-		//1번의 친구 찾기
-		for(int i = 1; i <= n; i++) {
-			if(arr[1][i]==1 && chk[i] == false) {
-				chk[i] = true;
+		for(int k = 1; k<n+1; k++) {
+			if(arr[1][k]==1 && chk[k] == false) {
+				chk[k] = true;
 				ans++;
-				
-	
-			}
-
-		}
-		//1의 친구의 친구 찾기
-		for (int i = 1; i <= n; i++) {
-			if(arr[1][i] == 1) {
-				for(int j = 1; j <= n; j++) {
-					if(arr[i][j] == 1 && chk[j] == false && j != 1) {
+				for(int j = 1; j<n+1; j++) {
+					if(arr[k][j]==1 && chk[j] == false && j != 1) {
 						chk[j] = true;
-						ans++;
+						ans++;	
+					}
+				}
+			}
+			if(arr[1][k]==1 && chk[k] == true) {
+				for(int j = 1; j<n+1; j++) {
+					if(arr[k][j]==1 && chk[j] == false && j != 1) {
+						chk[j] = true;
+						ans++;	
 					}
 				}
 			}
