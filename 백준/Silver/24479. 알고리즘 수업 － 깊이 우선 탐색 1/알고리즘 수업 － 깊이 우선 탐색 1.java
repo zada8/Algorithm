@@ -8,61 +8,55 @@ import java.util.StringTokenizer;
 
 public class Main {
 
-	public static int N;
-	
-	public static int cnt;
-	public static int[] visited;
-	private static int M;
-	private static int R;
-
+	private static int[] visited;
+	private static int N;
 	private static ArrayList<Integer>[] graph;
-	
+	private static int cnt;
+
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
-		
-		N = Integer.parseInt(st.nextToken());
-		M = Integer.parseInt(st.nextToken());
-		R = Integer.parseInt(st.nextToken());
-		
+		N = Integer.parseInt(st.nextToken()); //정점
+		int M = Integer.parseInt(st.nextToken()); //간선의 수
+		int R = Integer.parseInt(st.nextToken()); //시작 정점
 		visited = new int[N];
-		graph = new ArrayList[N];
+		cnt = 1;
+		
+		graph = new ArrayList[N]; //인접리스트 선언
 		for(int i = 0; i<N; i++) {
-			graph[i] = new ArrayList<Integer>();
+			graph[i] = new ArrayList<Integer>(); //객체 생성
 		}
 		
-		cnt = 1; 
-		
-		//간선 정보 입력
-		for(int i =0; i<M; i++) {
+		for(int i = 0; i<M; i++) {
 			StringTokenizer st2 = new StringTokenizer(br.readLine());
 			int a = Integer.parseInt(st2.nextToken());
 			int b = Integer.parseInt(st2.nextToken());
 			graph[a-1].add(b-1);
 			graph[b-1].add(a-1);
-				
 		}
+		///그래프 완성
 		
-		for(int i = 0; i<N; i++) {
+		for(int i =0; i<N; i++) {
 			if(graph[i].size()!=0) {
 				Collections.sort(graph[i]);
 			}
 		}
+		///그래프 정렬
 		
 		dfs(R-1);
 		for(int i = 0; i< N; i++) {
 			System.out.println(visited[i]);
 		}
+			
 	}
 	
 	public static void dfs(int idx) {
 		visited[idx] = cnt++;
 		
-		for(int i: graph[idx]) {
-			if(visited[i]== 0) {
-				dfs(i);
+		for(int i = 0; i<graph[idx].size(); i++) {
+			if(visited[graph[idx].get(i)] == 0) {
+				dfs(graph[idx].get(i));
 			}
-			
 		}
 	}
 
