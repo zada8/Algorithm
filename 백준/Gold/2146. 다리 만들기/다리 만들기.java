@@ -3,32 +3,25 @@ import java.util.*;
 
 public class Main {
     static class Pos{
-        int x;
-        int y;
-        int idx;
-        int dist; // 거리 추가
-        
-        Pos(int x, int y, int idx){
+        int x, y, dist;
+        Pos(int x, int y, int dist){
             this.x = x;
             this.y = y;
-            this.idx = idx;
-            this.dist = 0;
-        }
-        
-        Pos(int x, int y, int idx, int dist){
-            this.x = x;
-            this.y = y;
-            this.idx = idx;
             this.dist = dist;
+        }
+        Pos(int x, int y){
+            this.x = x;
+            this.y = y;
+            this.dist = 0;
         }
     }
 
-    static boolean[][] v;
-    static int[] dx = {-1,1,0,0};
-    static int[] dy = {0,0,-1,1};
-    static int N;
     static int[][] map;
-
+    static int idx;
+    final static int[] dx = {-1,1,0,0};
+    final static int[] dy = {0,0,-1,1};
+    static int N;
+    
     public static void main(String[] args) throws NumberFormatException, IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(br.readLine());
@@ -39,118 +32,92 @@ public class Main {
                 map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-        //지도 완성
+        idx = 2;
         
-        // 섬 나누기
-        v = new boolean[N][N];
-        int idx = 2; // 섬의 인덱스(1은 이미 있으니까 2부터)
+        // 섬 나누기 - 각 섬을 고유 번호로 구분
         for(int i = 0; i<N; i++) {
             for(int j = 0; j<N; j++) {
-                if(map[i][j] == 1 && !v[i][j]) {
-                    makeIslandIndex(j,i,idx++);
+                if(map[i][j] == 1) {
+                    seperateIsland(i,j);
+                    idx++;
                 }
             }
         }
         
-        /* 섬 잘 나눴는지 출력해봄
-		for(int i = 0; i<N; i++) {
-			for(int j = 0; j<N; j++) {
-				System.out.print(map[i][j]);
-			}
-			System.out.println();
-		}
-		*/
+        // 최단 거리 찾기 - 각 섬에서 다른 섬까지 최단거리 계산
+        int minDist = Integer.MAX_VALUE;
         
-
-        // 섬과 섬 사이의 최단거리 찾기
-        int minDistance = Integer.MAX_VALUE;
-        
-        // 각 섬에서 시작해서 다른 섬까지의 최단거리 구하기
-        for(int i = 0; i<N; i++) {
-            for(int j = 0; j<N; j++) {
-                if(map[i][j] >= 2) { // 섬인 경우
-                    int distance = findShortestBridge(j, i, map[i][j]);
-                    if(distance != -1) {
-                        minDistance = Math.min(minDistance, distance);
-                    }
-                }
+        // 각 섬별로 1번씩만 BFS 수행 (효율적)
+        for(int island = 2; island < idx; island++) {
+            int dist = findShortestDistance(island);
+            if(dist != -1) {
+                minDist = Math.min(minDist, dist);
             }
         }
         
-        System.out.println(minDistance);
+        System.out.println(minDist);
     }
-    //main끝
     
-    // 섬 나누기
-    static void makeIslandIndex(int x, int y, int idx) {
-        Pos a = new Pos(x,y,idx);
-        Queue<Pos> q = new LinkedList<>();
-        q.offer(a);
-        v[y][x] = true;
-        map[y][x] = idx;
-
-        while(!q.isEmpty()) {
-            Pos now = q.poll();
-            for(int i = 0; i<4; i++) {
-                int nextX = now.x+dx[i];
-                int nextY = now.y+dy[i];
-                if(nextX >= 0 && nextX <N && nextY>= 0 && nextY<N
-                    && map[nextY][nextX] == 1 && !v[nextY][nextX]) {
-                    map[nextY][nextX] = idx;
-                    v[nextY][nextX] = true;
-                    q.offer(new Pos(nextX, nextY,idx));
-                }
-            }
-        }
-    }
-
-    // 섬과 섬 사이의 최단거리 찾기
-    static int findShortestBridge(int startX, int startY, int startIdx) {
+    /**
+     * 특정 섬에서 다른 섬까지의 최단 거리를 BFS로 계산
+     * 해당 섬의 모든 칸을 시작점으로 하여 한 번에 탐색
+     */
+    private static int findShortestDistance(int islandNumber) {
         boolean[][] visited = new boolean[N][N];
         Queue<Pos> q = new LinkedList<>();
         
-        // 현재 섬의 모든 가장자리를 큐에 추가
+        // 해당 섬의 모든 칸을 큐에 추가 (Multi-source BFS)
         for(int i = 0; i < N; i++) {
             for(int j = 0; j < N; j++) {
-                if(map[i][j] == startIdx) {
-                    // 가장자리인지 확인 (주변에 바다가 있는지)
-                    for(int dir = 0; dir < 4; dir++) {
-                        int nx = j + dx[dir];
-                        int ny = i + dy[dir];
-                        if(nx >= 0 && nx < N && ny >= 0 && ny < N && map[ny][nx] == 0) {
-                            if(!visited[i][j]) {
-                                visited[i][j] = true;
-                                q.offer(new Pos(j, i, startIdx, 0));
-                            }
-                            break;
-                        }
-                    }
+                if(map[i][j] == islandNumber) {
+                    q.offer(new Pos(j, i, 0));  // 거리 0부터 시작
+                    visited[i][j] = true;
                 }
             }
         }
         
-        // BFS로 최단거리 찾기
         while(!q.isEmpty()) {
             Pos now = q.poll();
             
             for(int i = 0; i < 4; i++) {
-                int nextX = now.x + dx[i];
-                int nextY = now.y + dy[i];
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
                 
-                if(nextX >= 0 && nextX < N && nextY >= 0 && nextY < N && !visited[nextY][nextX]) {
-                    // 바다인 경우 - 계속 진행
-                    if(map[nextY][nextX] == 0) {
-                        visited[nextY][nextX] = true;
-                        q.offer(new Pos(nextX, nextY, startIdx, now.dist + 1));
+                if(nx>=0 && nx<N && ny>=0 && ny<N && !visited[ny][nx]) {
+                    // 다른 섬에 도착했으면
+                    if(map[ny][nx] != 0 && map[ny][nx] != islandNumber) {
+                        return now.dist;
                     }
-                    // 다른 섬에 도착한 경우
-                    else if(map[nextY][nextX] != startIdx && map[nextY][nextX] >= 2) {
-                        return now.dist; // 바다만 지나온 거리 반환
+                    // 바다면 계속 진행
+                    if(map[ny][nx] == 0) {
+                        visited[ny][nx] = true;
+                        q.offer(new Pos(nx, ny, now.dist + 1));
                     }
                 }
             }
         }
         
-        return -1; // 연결할 수 없는 경우
+        return -1; // 다른 섬에 도달할 수 없음
+    }
+    
+    /**
+     * 연결된 섬들을 같은 번호로 마킹하는 BFS
+     */
+    private static void seperateIsland(int y, int x) {
+        map[y][x] = idx;
+        Queue<Pos> q = new LinkedList<>();
+        q.offer(new Pos(x, y));
+        
+        while(!q.isEmpty()) {
+            Pos now = q.poll();
+            for(int i = 0; i < 4; i++) {
+                int nx = now.x + dx[i];
+                int ny = now.y + dy[i];
+                if(nx>=0 && nx<N && ny>=0 && ny<N && map[ny][nx] == 1) {
+                    map[ny][nx] = idx;
+                    q.offer(new Pos(nx, ny));
+                }
+            }
+        }
     }
 }
