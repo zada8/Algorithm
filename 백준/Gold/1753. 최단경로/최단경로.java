@@ -43,7 +43,7 @@ public class Main {
 		
 		
 		PriorityQueue<Edge> pq = new PriorityQueue<>();
-		//boolean[] v = new boolean[V+1];
+		boolean[] v = new boolean[V+1];
 		int[] dist = new int[V+1];
 		for(int i = 0; i<V+1; i++) {
 			dist[i] = Integer.MAX_VALUE;
@@ -53,7 +53,9 @@ public class Main {
 		
 		while(!pq.isEmpty()) {
 			Edge now = pq.poll();
-			if(now.w>dist[now.edge]) continue;
+			//if(now.w>dist[now.edge]) continue;
+			if(v[now.edge]) continue;
+			v[now.edge]= true;
 			
 			for(Edge newEdge:graph[now.edge]) {
 				if(now.w+newEdge.w<dist[newEdge.edge]) {
