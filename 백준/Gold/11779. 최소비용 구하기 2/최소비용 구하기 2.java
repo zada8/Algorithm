@@ -41,10 +41,10 @@ public class Main {
 		int[] dist = new int[n+1];
 		Arrays.fill(dist, Integer.MAX_VALUE);
 		boolean[] v = new boolean[n+1];
-		
+		int[] parent = new int[n+1];
 		pq.offer(new Edge(start,0));
 		dist[start] = 0;
-		int[] parent = new int[n+1]; //경로 추척을 위한 배열
+		
 		
 		while(!pq.isEmpty()) {
 			Edge now = pq.poll();
@@ -57,19 +57,19 @@ public class Main {
 				int newCost = dist[now.edge]+edge.w;
 				if(newCost<dist[edge.edge]) {
 					dist[edge.edge] = newCost;
-					parent[edge.edge] = now.edge; //부모 정점 기록
+					parent[edge.edge] = now.edge;
 					pq.offer(new Edge(edge.edge, dist[edge.edge]));
 				}
 			}
 		}
-		
-		//최소 경로 배열
+		//최소 루트
 		List<Integer> route = new ArrayList<>();
-		int current = dest; //마지막 정점 번호
+		route.add(dest);
+		int current = dest;
 		while(true) {
+			current = parent[current];
 			route.add(current);
 			if(current == start) break;
-			current = parent[current]; //부모 정점
 			
 		}
 		Collections.reverse(route);
