@@ -63,26 +63,20 @@ public class Main {
 	
 	private static int virus(Point[] sel) {
 		
-		// 1. 맵 복사
-	    int[][] copyMap = new int[N][M];
-	    for(int i = 0; i < N; i++) {
-	        for(int j = 0; j < M; j++) {
-	            copyMap[i][j] = map[i][j];
-	        }
-	    }
-	    
-	    // 2. 선택된 위치에 벽 세우기
-	    for(int i = 0; i < 3; i++) {
-	        copyMap[sel[i].y][sel[i].x] = 1;
-	    }
 		
 		Queue<Point> q = new LinkedList<>();
 		boolean[][] v = new boolean[N][M];
 		
-		 // 바이러스(2) 위치들을 큐에 추가
+		//벽 방문배열 
+	    for(int i = 0; i < 3; i++) {
+	        v[sel[i].y][sel[i].x] = true;
+	    }
+		
+		
+		 // 바이러스 큐에 추가
 	    for(int i = 0; i < N; i++) {
 	        for(int j = 0; j < M; j++) {
-	            if(copyMap[i][j] == 2) {
+	            if(map[i][j] == 2) {
 	                q.offer(new Point(j, i));
 	                v[i][j] = true;
 	            }
@@ -95,7 +89,7 @@ public class Main {
 				int nx = now.x + dx[i];
 				int ny = now.y + dy[i];
 				if(nx>=0 && nx<M && ny>=0 && ny<N && !v[ny][nx] 
-						&&copyMap[ny][nx] == 0) {
+						&&map[ny][nx] == 0) {
 					v[ny][nx] = true;
 					q.offer(new Point(nx,ny));
 				} 
@@ -106,7 +100,7 @@ public class Main {
 		int safeSum = 0;
 		for(int i = 0; i<N; i++) {
 			for(int j = 0; j<M; j++) {
-				if(copyMap[i][j] == 0 && !v[i][j]) {
+				if(map[i][j] == 0 && !v[i][j]) {
 					safeSum++;
 				}
 			}
