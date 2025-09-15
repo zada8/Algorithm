@@ -1,43 +1,47 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
-
-
+import java.io.*;
+import java.util.*;
 
 public class Main {
-
+	private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	private static StringTokenizer st;
+	
+	static int N,M;
+	static int[] numbers;
+	
 	public static void main(String[] args) throws IOException {
+		//-------여기에 해결 코드를 작성하세요.
+		st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
 		
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		
-		int N = Integer.parseInt(st.nextToken()); //바구니 수
-		int M = Integer.parseInt(st.nextToken()); //역순 만들 횟수
-		
-		int[] array = new int[N];
-		
-		for (int l = 0; l <N; l++) {
-			array[l] = l+1;
+		numbers = new int[N];
+		for (int i = 0; i < N; i++) {
+			numbers[i] = i+1;
 		}
 		
-		for (int k = 0; k < M; k++) {
-			StringTokenizer st2 = new StringTokenizer(br.readLine());
-			int i = Integer.parseInt(st2.nextToken()); //i번째부터 j번째까지 역순
-			int j = Integer.parseInt(st2.nextToken());
+		for (int i = 0; i < M; i++) {
+			st = new StringTokenizer(br.readLine());
+			int l = Integer.parseInt(st.nextToken())-1;
+			int r = Integer.parseInt(st.nextToken())-1;
 			
-			while (i < j) {
-				int temp = array[i-1];
-				array[i-1] = array[j-1];
-				array[j-1] = temp;
-				i++;
-				j--;
-			}
+			swap(numbers, l, r);
 		}
-		for(int i = 0; i < N; i++) {
-			System.out.print(array[i] +" ");
+		
+		for (int num : numbers) {
+			System.out.print(num+" ");
 		}
-		System.out.println();
+	}
+
+	private static void swap(int[] arr, int l, int r) {
+		while(l < r) {
+			int tmp = arr[l];
+			arr[l] = arr[r];
+			arr[r] = tmp;
+			l++;
+			r--;
+		}
+		
+		
 		
 	}
 
